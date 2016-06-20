@@ -2,17 +2,16 @@
 // Node Class
 // ------------------------------
 
-function Node(x, y, radius) {
-  this.init(x, y, radius);
+function Node(x, y, radius, color) {
+  this.init(x, y, radius, color);
 };
 
 Node.prototype = {
   init : function(x, y, radius, color) {
-    this.color = color || 'orange';
-
-    this.x = x || 10.0;
-    this.y = y || 10.0;
-    this.radius = radius || 2;
+    this.color = color;
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
   },
 
   draw : function( ctx ) {
@@ -25,7 +24,7 @@ Node.prototype = {
 
 // -------------------------------------------
 
-function collectNodes(canvas_w, canvas_h) {
+function collectNodes(canvas_w, canvas_h, center_x, center_y) {
   var nodes = [],
       w = 0,
       h = 0,
@@ -37,19 +36,21 @@ function collectNodes(canvas_w, canvas_h) {
 
     while ( h < canvas_h - size ) {
       h += size;
-      nodes.push({pos: [w, h], r: 1});
+      nodes.push({pos: [w, h], r: 5, color: 'yellow'});
     }
   }
   return nodes;
 }
 
 function layOutNodes(nodes, ctx){
+  ctx.clearRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
   nodes.forEach(function(n) {
-    var node = new Node(n.pos[0], n.pos[1], n.r);
+    var node = new Node(n.pos[0] * Math.random(), n.pos[1] * Math.random(), n.r * Math.random(), n.color);
     node.draw(ctx);
   });
 }
 
+// todo:
 function updateLayout(e) {
   var mouse = { x: e.clientX, y: e.clientY};
 
@@ -62,6 +63,15 @@ function resize() {
   canvas.width = w = innerWidth;
 	canvas.height = h = 640;
 
-  layOutNodes(collectNodes(w, h), ctx);
-  canvas.addEventListener('mousemove', updateLayout, false);
+
+  // canvas.addEventListener('mousemove', updateLayout, false);
+
+  window.setInterval(function(){
+    layOutNodes(collectNodes(w, h), ctx);
+  }, 30);
+
 };
+
+function getDistance(p1, p2) {
+  return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
+}
